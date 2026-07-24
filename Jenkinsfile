@@ -93,6 +93,19 @@ pipeline {
         stage("Deploy to Kubernetes") {
             steps {
                 sh """
+                echo "Deleting old deployments..."
+
+                kubectl delete deployment front-end --ignore-not-found=true
+                kubectl delete deployment catalogue --ignore-not-found=true
+                kubectl delete deployment catalogue-db --ignore-not-found=true
+                kubectl delete deployment user --ignore-not-found=true
+                kubectl delete deployment user-db --ignore-not-found=true
+                kubectl delete deployment payment --ignore-not-found=true
+
+                sleep 10
+
+                echo "Deploying applications..."
+
                 kubectl apply -f front-end-deployment.yaml
                 kubectl apply -f catalogue-deployment.yaml
                 kubectl apply -f catalogue-db-deployment.yaml
@@ -100,10 +113,17 @@ pipeline {
                 kubectl apply -f user-db-deployment.yaml
                 kubectl apply -f payment-deployment.yaml
 
+                echo "Waiting for deployments..."
+
                 kubectl rollout status deployment/front-end --timeout=300s
                 kubectl rollout status deployment/catalogue --timeout=300s
+                kubectl rollout status deployment/catalogue-db --timeout=300s
                 kubectl rollout status deployment/user --timeout=300s
+                kubectl rollout status deployment/user-db --timeout=300s
                 kubectl rollout status deployment/payment --timeout=300s
+
+                echo "Current Pods"
+                kubectl get pods -o wide
                 """
             }
         }
