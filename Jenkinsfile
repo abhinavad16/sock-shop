@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_REGISTRY = "192.168.74.68:5000"
+        DOCKER_REGISTRY = "192.168.1.109:5000"
         GEMINI_API_KEY = credentials("gemini-api-key")
         SLACK_WEBHOOK = credentials("slack-webhook")
     }
