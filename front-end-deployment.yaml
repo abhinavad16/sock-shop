@@ -37,7 +37,7 @@ spec:
           capabilities:
             drop:
               - ALL
---- 
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -45,10 +45,11 @@ metadata:
   labels:
     app: front-end
 spec:
-  ports:
-  - port: 80
-    targetPort: 8079
-    protocol: TCP
+  type: NodePort
   selector:
     app: front-end
-  type: NordPort
+  ports:
+    - port: 80
+      targetPort: 8079
+      protocol: TCP
+      nodePort: 30080
