@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: payment
-        image: 192.168.1.109:5000/payment:latest
+        image: 192.168.189.131:5000/payment:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
