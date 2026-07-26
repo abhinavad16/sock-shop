@@ -51,4 +51,4 @@ spec:
     protocol: TCP
   selector:
     app: front-end
-  type: LoadBalancer
+  type: NordPort
