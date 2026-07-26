@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: front-end
-        image: 192.168.1.109:5000/front-end:latest
+        image: 192.168.189.131:5000/front-end:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8079
