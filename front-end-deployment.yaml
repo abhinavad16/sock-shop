@@ -52,4 +52,4 @@ spec:
     - port: 80
       targetPort: 8079
       protocol: TCP
-      nodePort: 30080
+      nodePort: 30090
