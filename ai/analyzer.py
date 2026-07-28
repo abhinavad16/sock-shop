@@ -39,43 +39,27 @@ FASTAPI_URL = os.getenv(
     "http://192.168.189.128:8000/cicd-alert"
 )
 
+
 def analyze(trivy_report):
 
     sonar_report = []
 
+    # Read SonarQube report if it exists
     if os.path.exists("sonar-report.json"):
-        with open("sonar-report.json", "r") as f:
-            report = json.load(f)
-            sonar_report = report.get("issues", [])
+        try:
+            with open("sonar-report.json", "r") as f:
+                report = json.load(f)
+                sonar_report = report.get("issues", [])
+        except Exception as e:
+            print(f"Unable to read Sonar report: {e}")
 
     payload = {
         "pipeline": os.getenv("JOB_NAME", "Sock-Shop"),
-        "stage": os.getenv("STAGE_NAME", "SonarQube"),
+        "stage": os.getenv("STAGE_NAME", "Unknown"),
         "status": os.getenv("BUILD_STATUS", "RUNNING"),
         "sonar_report": sonar_report,
         "trivy_report": trivy_report
     }
-
-    response = requests.post(
-        FASTAPI_URL,
-        json=payload,
-        timeout=120
-    )
-
-    print(response.text)
-
-    result = response.json()
-
-    if result["status"] == "FAIL":
-        print(result["reason"])
-        sys.exit(1)
-
-    sys.exit(0)
-
-
-if __name__ == "__main__":
-    trivy_report = sys.stdin.read()
-    analyze(trivy_report)
 
     try:
 
@@ -85,17 +69,28 @@ if __name__ == "__main__":
             timeout=120
         )
 
-        print("FastAPI Response:")
-        print(response.text)
+        response.raise_for_status()
+
+        result = response.json()
+
+        print(result)
+
+        if result["status"] == "FAIL":
+            print(result["reason"])
+            sys.exit(1)
+
+        print(result["reason"])
+        sys.exit(0)
 
     except Exception as e:
 
         print(f"Unable to contact FastAPI: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
 
-    # Jenkins passes the Trivy report through stdin
     trivy_report = sys.stdin.read()
 
+    analyze(trivy_report)
     analyze(trivy_report)
