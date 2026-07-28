@@ -96,4 +96,4 @@ if __name__ == "__main__":
 
     trivy_report = sys.stdin.read()
 
-    analyze(trivy_report)ivy_report)
+    analyze(trivy_report)
