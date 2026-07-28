@@ -158,10 +158,8 @@ pipeline {
                 //     message: "✅ Pipeline '${env.JOB_NAME}' (Build #${env.BUILD_NUMBER}) completed successfully!"
                 // )
     
-                // Option 2: Using curl directly with the SLACK_WEBHOOK credential
-                sh """
-                curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"✅ Pipeline *${env.JOB_NAME}* (Build #${env.BUILD_NUMBER}) completed successfully!\"}' ${env.SLACK_WEBHOOK}
-                """
+                // Option 2: Using curl directly with the SLACK_WEBHOOK credential (Recommended fix)
+                sh 'curl -X POST -H "Content-type: application/json" --data "{\"text\":\"✅ Pipeline *${env.JOB_NAME}* (Build #${env.BUILD_NUMBER}) completed successfully!\"}" "${env.SLACK_WEBHOOK}"'
             }
         }
 
