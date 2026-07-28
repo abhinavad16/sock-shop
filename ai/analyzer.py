@@ -44,7 +44,6 @@ def analyze(trivy_report):
 
     sonar_report = []
 
-    # Read SonarQube report if it exists
     if os.path.exists("sonar-report.json"):
         try:
             with open("sonar-report.json", "r") as f:
@@ -71,15 +70,20 @@ def analyze(trivy_report):
 
         response.raise_for_status()
 
-        result = response.json()
+        try:
+            result = response.json()
+        except Exception:
+            print("Invalid JSON received from FastAPI")
+            print(response.text)
+            sys.exit(1)
 
         print(result)
 
-        if result["status"] == "FAIL":
-            print(result["reason"])
+        if result.get("status") == "FAIL":
+            print(result.get("reason", "Pipeline blocked"))
             sys.exit(1)
 
-        print(result["reason"])
+        print(result.get("reason", "Pipeline approved"))
         sys.exit(0)
 
     except Exception as e:
@@ -92,5 +96,4 @@ if __name__ == "__main__":
 
     trivy_report = sys.stdin.read()
 
-    analyze(trivy_report)
-    analyze(trivy_report)
+    analyze(trivy_report)ivy_report)
