@@ -6,33 +6,35 @@ pipeline {
         GEMINI_API_KEY = credentials("gemini-api-key")
         SLACK_WEBHOOK = credentials("slack-webhook")
         KUBECONFIG = "/var/lib/jenkins/.kube/config"
+        SONAR_TOKEN = credentials("sonar-token")
     }
 
-    stages {
+    stage("SonarQube Scan") {
+    steps {
+        script {
 
-        stage("Checkout") {
-            steps {
-                checkout scm
-            }
-        }
+            dir("front-end") {
 
-        stage("SonarQube Scan") {
-            steps {
-                script {
-                    dir("front-end") {
-                        def scannerHome = tool 'SonarQube'
-                        withSonarQubeEnv("SonarQubeServer") {
-                            sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=sockshop-front-end \
-                            -Dsonar.sources=.
-                            """
-                        }
-                    }
+                def scannerHome = tool 'SonarQube'
+
+                withSonarQubeEnv("SonarQubeServer") {
+
+                    sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=sockshop-front-end \
+                    -Dsonar.sources=.
+                    """
+
+                    sleep 15
+
+                    curl -u ${SONAR_TOKEN}: \
+                    "${SONAR_HOST_URL}/api/issues/search?componentKeys=sockshop-front-end&ps=100" \
+                    -o ../sonar-report.json
                 }
             }
         }
-
+    }
+}
         stage("Build & Scan Front-End") {
             steps {
                 dir("front-end") {
