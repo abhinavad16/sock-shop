@@ -42,37 +42,42 @@ FASTAPI_URL = os.getenv(
 
 def analyze(trivy_report):
 
+    sonar_report = ""
+
+    # Read SonarQube findings if available
+    if os.path.exists("sonar-report.json"):
+        with open("sonar-report.json", "r") as f:
+            sonar_report = f.read()
+
     payload = {
         "pipeline": os.getenv("JOB_NAME", "Sock Shop"),
         "stage": os.getenv("STAGE_NAME", "Unknown Stage"),
         "status": os.getenv("BUILD_STATUS", "FAILED"),
 
-        "sonar_summary": {
-            "bugs": int(os.getenv("SONAR_BUGS", "0")),
-            "vulnerabilities": int(os.getenv("SONAR_VULNERABILITIES", "0")),
-            "hotspots": int(os.getenv("SONAR_HOTSPOTS", "0"))
-        },
+        # Actual SonarQube findings
+        "sonar_report": sonar_report,
 
+        # Actual Trivy report
         "trivy_report": trivy_report
     }
 
-    response = requests.post(
-        FASTAPI_URL,
-        json=payload,
-        timeout=60
-    )
+    try:
 
-    print(response.text)
+        response = requests.post(
+            FASTAPI_URL,
+            json=payload,
+            timeout=120
+        )
+
+        print(response.text)
+
+    except Exception as e:
+
+        print(f"Unable to contact FastAPI: {e}")
 
 
 if __name__ == "__main__":
 
-    report = sys.stdin.read()
+    trivy_report = sys.stdin.read()
 
-    analyze(report)
-
-
-
-
-
-
+    analyze(trivy_report)
