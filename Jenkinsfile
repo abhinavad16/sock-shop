@@ -20,33 +20,32 @@ pipeline {
         stage("SonarQube Scan") {
             steps {
                 script {
-
-                    dir("front-end") {
-
-                        def scannerHome = tool 'SonarQube'
-
-                        withSonarQubeEnv("SonarQubeServer") {
-
-                            sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=sockshop-front-end \
-                            -Dsonar.sources=.
-                            """
-
-                            echo "Waiting for SonarQube analysis..."
-                            sleep 20
-
-                            sh """
-                            curl -u ${SONAR_TOKEN}: \
-                            "${SONAR_HOST_URL}/api/issues/search?componentKeys=sockshop-front-end&ps=100" \
-                            -o ../sonar-report.json
-                            """
-
-                            sh """
-                            echo "SonarQube report downloaded."
-                            ls -lh ../sonar-report.json
-                            """
-                        }
+        
+                    def scannerHome = tool 'SonarQube'
+        
+                    withSonarQubeEnv("SonarQubeServer") {
+        
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                          -Dsonar.projectKey=sockshop \
+                          -Dsonar.projectName=Sock-Shop \
+                          -Dsonar.sources=. \
+                          -Dsonar.sourceEncoding=UTF-8
+                        """
+        
+                        echo "Waiting for SonarQube analysis..."
+                        sleep 20
+        
+                        sh """
+                        curl -u ${SONAR_TOKEN}: \
+                        "${SONAR_HOST_URL}/api/issues/search?componentKeys=sockshop&ps=500" \
+                        -o sonar-report.json
+                        """
+        
+                        sh """
+                        echo "SonarQube report downloaded."
+                        ls -lh sonar-report.json
+                        """
                     }
                 }
             }
