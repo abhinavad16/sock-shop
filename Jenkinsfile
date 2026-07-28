@@ -33,7 +33,6 @@ pipeline {
                           -Dsonar.sourceEncoding=UTF-8
                         """
         
-                        echo "Waiting for SonarQube analysis..."
                         sleep 20
         
                         sh """
@@ -42,11 +41,29 @@ pipeline {
                         -o sonar-report.json
                         """
         
+                        echo "Sending Sonar report to AI..."
+        
                         sh """
-                        echo "SonarQube report downloaded."
-                        ls -lh sonar-report.json
+                        python3 ai/analyzer.py \
+                            --type sonar \
+                            --file sonar-report.json \
+                            > sonar-ai-result.json
                         """
+        
+                        script {
+        
+                            def result = readJSON file: "sonar-ai-result.json"
+        
+                            echo "AI Decision : ${result.status}"
+                            echo "Reason      : ${result.reason}"
+        
+                            if(result.status == "FAIL"){
+                                error("Pipeline stopped by AI due to SonarQube vulnerabilities.")
+                            }
+                        }
+        
                     }
+        
                 }
             }
         }
