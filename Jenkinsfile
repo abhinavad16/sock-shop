@@ -147,18 +147,26 @@ pipeline {
         }
     }
 
+
     post {
-
-        failure {
-
+        success {
             script {
-
+                withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK' )]) {
+                    sh '''
+                        curl -X POST -H 'Content-type: application/json' \
+                          --data '{"text":"✅ *Pipeline SUCCESS*\\n*Project:* Sock Shop Microservices\\n*Status:* All services built, scanned, and deployed successfully!"}' \
+                          ${SLACK_WEBHOOK}
+                    '''
+                }
+            }
+        }
+        failure {
+            script {
                 sh """
                 cat trivy-front-end.txt > combined-trivy-report.txt 2>/dev/null || echo "No Trivy reports" > combined-trivy-report.txt
                 cat trivy-catalogue.txt >> combined-trivy-report.txt 2>/dev/null || true
                 cat trivy-user.txt >> combined-trivy-report.txt 2>/dev/null || true
                 cat trivy-payment.txt >> combined-trivy-report.txt 2>/dev/null || true
-
                 tail -n 200 combined-trivy-report.txt | python3 ai/analyzer.py || echo "AI analysis skipped"
                 """
             }
