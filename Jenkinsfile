@@ -57,7 +57,7 @@ pipeline {
                 dir("front-end") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/front-end:latest .
-                    trivy image --severity CRITICAL --exit-code 0 ${DOCKER_REGISTRY}/front-end:latest > ../trivy-front-end.txt
+                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/front-end:latest > ../trivy-front-end.txt
                     docker push ${DOCKER_REGISTRY}/front-end:latest
                     """
                 }
