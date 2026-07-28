@@ -148,18 +148,7 @@ pipeline {
     }
 
 
-    post {
-        success {
-            script {
-                withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK' )]) {
-                    sh '''
-                        curl -X POST -H 'Content-type: application/json' \
-                          --data '{"text":"✅ *Pipeline SUCCESS*\\n*Project:* Sock Shop Microservices\\n*Status:* All services built, scanned, and deployed successfully!"}' \
-                          ${SLACK_WEBHOOK}
-                    '''
-                }
-            }
-        }
+    post {         
         failure {
             script {
                 sh """
