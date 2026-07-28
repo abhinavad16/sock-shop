@@ -6,7 +6,7 @@ pipeline {
         GEMINI_API_KEY = credentials("gemini-api-key")
         SLACK_WEBHOOK = credentials("slack-webhook")
         KUBECONFIG = "/var/lib/jenkins/.kube/config"
-        SONAR_TOKEN = credentials("sonar-token")
+        SONAR_TOKEN = credentials("sonarqube-token")
     }
 
     stage("SonarQube Scan") {
