@@ -9,32 +9,49 @@ pipeline {
         SONAR_TOKEN = credentials("sonarqube-token")
     }
 
-    stage("SonarQube Scan") {
-    steps {
-        script {
+    stages {
 
-            dir("front-end") {
+        stage("Checkout") {
+            steps {
+                checkout scm
+            }
+        }
 
-                def scannerHome = tool 'SonarQube'
+        stage("SonarQube Scan") {
+            steps {
+                script {
 
-                withSonarQubeEnv("SonarQubeServer") {
+                    dir("front-end") {
 
-                    sh """
-                    ${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=sockshop-front-end \
-                    -Dsonar.sources=.
-                    """
+                        def scannerHome = tool 'SonarQube'
 
-                    sleep 15
+                        withSonarQubeEnv("SonarQubeServer") {
 
-                    curl -u ${SONAR_TOKEN}: \
-                    "${SONAR_HOST_URL}/api/issues/search?componentKeys=sockshop-front-end&ps=100" \
-                    -o ../sonar-report.json
+                            sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=sockshop-front-end \
+                            -Dsonar.sources=.
+                            """
+
+                            echo "Waiting for SonarQube analysis..."
+                            sleep 20
+
+                            sh """
+                            curl -u ${SONAR_TOKEN}: \
+                            "${SONAR_HOST_URL}/api/issues/search?componentKeys=sockshop-front-end&ps=100" \
+                            -o ../sonar-report.json
+                            """
+
+                            sh """
+                            echo "SonarQube report downloaded."
+                            ls -lh ../sonar-report.json
+                            """
+                        }
+                    }
                 }
             }
         }
-    }
-}
+
         stage("Build & Scan Front-End") {
             steps {
                 dir("front-end") {
