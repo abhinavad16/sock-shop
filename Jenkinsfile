@@ -148,7 +148,23 @@ pipeline {
     }
 
 
-    post {         
+    post {
+        success {
+            script {
+                // Option 1: Using Jenkins Slack Plugin (recommended if installed)
+                // slackSend (
+                //     channel: '#your-slack-channel', // Replace with your actual Slack channel
+                //     color: 'good',
+                //     message: "✅ Pipeline '${env.JOB_NAME}' (Build #${env.BUILD_NUMBER}) completed successfully!"
+                // )
+    
+                // Option 2: Using curl directly with the SLACK_WEBHOOK credential
+                sh """
+                curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"✅ Pipeline *${env.JOB_NAME}* (Build #${env.BUILD_NUMBER}) completed successfully!\"}' ${env.SLACK_WEBHOOK}
+                """
+            }
+        }
+
         failure {
             script {
                 sh """
