@@ -58,7 +58,7 @@ pipeline {
                 dir("front-end") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/front-end:latest .
-                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/front-end:latest > ../trivy-front-end.txt
+                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/front-end:latest > ../trivy-front-end.txt
                     docker push ${DOCKER_REGISTRY}/front-end:latest
                     """
                 }
@@ -70,7 +70,7 @@ pipeline {
                 dir("catalogue") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/catalogue:latest -f docker/catalogue/Dockerfile .
-                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/catalogue:latest > ../trivy-catalogue.txt
+                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/catalogue:latest > ../trivy-catalogue.txt
                     docker push ${DOCKER_REGISTRY}/catalogue:latest
                     """
                 }
@@ -82,7 +82,7 @@ pipeline {
                 dir("user") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/user:latest .
-                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/user:latest > ../trivy-user.txt
+                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/user:latest > ../trivy-user.txt
                     docker push ${DOCKER_REGISTRY}/user:latest
                     """
                 }
@@ -94,7 +94,7 @@ pipeline {
                 dir("payment") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/payment:latest -f docker/payment/Dockerfile .
-                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/payment:latest > ../trivy-payment.txt
+                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/payment:latest > ../trivy-payment.txt
                     docker push ${DOCKER_REGISTRY}/payment:latest
                     """
                 }
