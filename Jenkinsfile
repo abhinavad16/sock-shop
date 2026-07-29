@@ -45,10 +45,10 @@ pipeline {
         
                         echo "Sending Sonar report to AI..."
         
-                        \\sh """
-                        \\python3 ai/analyzer.py
-                        \\"""        
-                        \\echo "AI approved SonarQube scan."        
+                        //sh """
+                        //python3 ai/analyzer.py
+                        //"""        
+                        //echo "AI approved SonarQube scan."        
                     }
                 }
             }
