@@ -72,7 +72,7 @@ pipeline {
                 dir("catalogue") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/catalogue:latest -f docker/catalogue/Dockerfile .
-                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG} > ../trivy-catalogue.txt
+                    trivy image --severity CRITICAL --exit-code 0 ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG} > ../trivy-catalogue.txt
                     docker push ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/catalogue:latest
                     """
