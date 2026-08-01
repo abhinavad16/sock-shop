@@ -46,10 +46,10 @@ pipeline {
         
                         echo "Sending Sonar report to AI..."
         
-                        //sh """
-                        //python3 ai/analyzer.py
-                        //"""        
-                        //echo "AI approved SonarQube scan."        
+                        sh """
+                        python3 ai/analyzer.py
+                        """        
+                        echo "AI approved SonarQube scan."        
                     }
                 }
             }
@@ -59,7 +59,7 @@ pipeline {
                 dir("front-end") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/front-end:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/front-end:latest .
-                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/front-end:${IMAGE_TAG} > ../trivy-front-end.txt
+                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/front-end:${IMAGE_TAG} > ../trivy-front-end.txt
                     docker push ${DOCKER_REGISTRY}/front-end:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/front-end:latest
                     """
@@ -72,7 +72,7 @@ pipeline {
                 dir("catalogue") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/catalogue:latest -f docker/catalogue/Dockerfile .
-                    trivy image --severity CRITICAL --exit-code 0 ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG} > ../trivy-catalogue.txt
+                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG} > ../trivy-catalogue.txt
                     docker push ${DOCKER_REGISTRY}/catalogue:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/catalogue:latest
                     """
@@ -85,7 +85,7 @@ pipeline {
                 dir("user") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/user:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/user:latest .
-                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/user:${IMAGE_TAG} > ../trivy-user.txt
+                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/user:${IMAGE_TAG} > ../trivy-user.txt
                     docker push ${DOCKER_REGISTRY}/user:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/user:latest
                     """
@@ -98,7 +98,7 @@ pipeline {
                 dir("payment") {
                     sh """
                     docker build -t ${DOCKER_REGISTRY}/payment:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/payment:latest -f docker/payment/Dockerfile .
-                    trivy image --severity CRITICAL ${DOCKER_REGISTRY}/payment:${IMAGE_TAG} > ../trivy-payment.txt
+                    trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/payment:${IMAGE_TAG} > ../trivy-payment.txt
                     docker push ${DOCKER_REGISTRY}/payment:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/payment:latest
                     """
